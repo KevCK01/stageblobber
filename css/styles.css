@@ -1,0 +1,1380 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Dark Mode Theme (Default) - Traditional Dark Mode */
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --bg-tertiary: #2d2d30;
+    --bg-elevated: #2d2d30;
+    --text-primary: #cccccc;
+    --text-secondary: #9d9d9d;
+    --text-muted: #6e6e6e;
+    --border-primary: #3e3e42;
+    --border-secondary: #555555;
+    --stage-floor: #37373d;
+    --stage-boundary: #6e6e6e;
+    --svg-bg: #1e1e1e;
+    
+    /* Riser colors */
+    --riser-fill: #3e3e42;
+    --riser-stroke: #555555;
+    
+    /* Player colors - Green family (V1, Flute, Horn) */
+    --color-green: #4ec9b0;
+    --color-green-hover: #3fb89a;
+    --color-green-drag: #30a78a;
+    --color-green-stroke: #21967a;
+    
+    /* Player colors - Orange family (V2, Oboe, Trumpet) */
+    --color-orange: #ce9178;
+    --color-orange-hover: #be8168;
+    --color-orange-drag: #ae7158;
+    --color-orange-stroke: #9e6148;
+    
+    /* Player colors - Red family (Viola, Clarinet, Trombone) */
+    --color-red: #f48771;
+    --color-red-hover: #e47761;
+    --color-red-drag: #d46751;
+    --color-red-stroke: #c45741;
+    
+    /* Player colors - Purple family (Cello) */
+    --color-purple: #c586c0;
+    --color-purple-hover: #b576b0;
+    --color-purple-drag: #a566a0;
+    --color-purple-stroke: #955690;
+    
+    /* Player colors - Teal family (Bass, Bassoon, Tuba) */
+    --color-teal: #4fc1ff;
+    --color-teal-hover: #3fb1ef;
+    --color-teal-drag: #2fa1df;
+    --color-teal-stroke: #1f91cf;
+    
+    /* Chorus singers */
+    --chorus-singer: #f48771;
+    --chorus-singer-hover: #e47761;
+    --chorus-singer-drag: #d46751;
+    --chorus-singer-stroke: #c45741;
+}
+
+/* Logo styling - 35% transparent so it naturally takes on the background color */
+.site-logo {
+    opacity: 0.65;
+    transition: opacity 0.3s ease;
+}
+
+body.theme-nord {
+    /* Nord Theme */
+    --bg-primary: #2e3440;
+    --bg-secondary: #3b4252;
+    --bg-tertiary: #434c5e;
+    --bg-elevated: #3b4252;
+    --text-primary: #eceff4;
+    --text-secondary: #d8dee9;
+    --text-muted: #81a1c1;
+    --border-primary: #4c566a;
+    --border-secondary: #5e81ac;
+    --stage-floor: #4c566a;
+    --stage-boundary: #5e81ac;
+    --svg-bg: #2e3440;
+    
+    /* Riser colors - Polar Night */
+    --riser-fill: #434c5e;
+    --riser-stroke: #3b4252;
+    
+    /* Nord Aurora & Frost colors */
+    --color-green: #a3be8c;
+    --color-green-hover: #8fa878;
+    --color-green-drag: #7b9264;
+    --color-green-stroke: #677c50;
+    
+    --color-orange: #d08770;
+    --color-orange-hover: #c2765c;
+    --color-orange-drag: #b46548;
+    --color-orange-stroke: #a65434;
+    
+    --color-red: #bf616a;
+    --color-red-hover: #b1515a;
+    --color-red-drag: #a3414a;
+    --color-red-stroke: #95313a;
+    
+    --color-purple: #b48ead;
+    --color-purple-hover: #a67e9d;
+    --color-purple-drag: #986e8d;
+    --color-purple-stroke: #8a5e7d;
+    
+    --color-teal: #8fbcbb;
+    --color-teal-hover: #7faaa9;
+    --color-teal-drag: #6f9897;
+    --color-teal-stroke: #5f8685;
+    
+    /* Chorus singers - Nord Aurora */
+    --chorus-singer: #bf616a;
+    --chorus-singer-hover: #b1515a;
+    --chorus-singer-drag: #a3414a;
+    --chorus-singer-stroke: #95313a;
+}
+
+body.theme-solarized {
+    /* Solarized Light Theme */
+    --bg-primary: #fdf6e3;
+    --bg-secondary: #eee8d5;
+    --bg-tertiary: #eee8d5;
+    --bg-elevated: #eee8d5;
+    --text-primary: #657b83;
+    --text-secondary: #586e75;
+    --text-muted: #93a1a1;
+    --border-primary: #93a1a1;
+    --border-secondary: #839496;
+    --stage-floor: #eee8d5;
+    --stage-boundary: #93a1a1;
+    --svg-bg: #fdf6e3;
+    
+    /* Riser colors - Base tones */
+    --riser-fill: #d5ccb8;
+    --riser-stroke: #c2b9a5;
+    
+    /* Solarized accent colors */
+    --color-green: #859900;
+    --color-green-hover: #6d7d00;
+    --color-green-drag: #556100;
+    --color-green-stroke: #3d4500;
+    
+    --color-orange: #cb4b16;
+    --color-orange-hover: #b33c0f;
+    --color-orange-drag: #9b2d08;
+    --color-orange-stroke: #831e01;
+    
+    --color-red: #dc322f;
+    --color-red-hover: #c42825;
+    --color-red-drag: #ac1e1b;
+    --color-red-stroke: #941411;
+    
+    --color-purple: #6c71c4;
+    --color-purple-hover: #5c61b4;
+    --color-purple-drag: #4c51a4;
+    --color-purple-stroke: #3c4194;
+    
+    --color-teal: #2aa198;
+    --color-teal-hover: #228982;
+    --color-teal-drag: #1a716c;
+    --color-teal-stroke: #125956;
+    
+    /* Chorus singers - Solarized Red */
+    --chorus-singer: #dc322f;
+    --chorus-singer-hover: #c42825;
+    --chorus-singer-drag: #ac1e1b;
+    --chorus-singer-stroke: #941411;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding: 15px;
+}
+
+.main-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.content-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.inputs-container {
+    flex: 0 0 340px;
+    min-width: 340px;
+    max-width: 340px;
+    position: sticky;
+    top: 15px;
+}
+
+.stage-plot-container-wrapper {
+    flex: 1;
+    min-width: 600px;
+}
+
+.container {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+}
+
+.header {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.header h1 {
+    font-size: 1.8em;
+    margin-bottom: 5px;
+    font-weight: 400;
+}
+
+.header p {
+    opacity: 0.7;
+    font-size: 0.9em;
+}
+
+.theme-selector {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.theme-selector option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.calculator {
+    padding: 12px;
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.calculator::-webkit-scrollbar {
+    width: 8px;
+}
+
+.calculator::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+.calculator::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: 4px;
+}
+
+.sections-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.section {
+    margin-bottom: 0;
+    padding: 10px;
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    background: var(--bg-tertiary);
+}
+
+.section h3 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-primary);
+    padding-bottom: 5px;
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.input-group.compact {
+    grid-template-columns: 1fr auto;
+}
+
+.input-group label {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 0.8em;
+}
+
+.input-group input[type="number"] {
+    width: 50px;
+    padding: 4px 6px;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    font-size: 0.8em;
+    text-align: center;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.input-group input[type="number"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.sq-ft-display {
+    color: var(--text-muted);
+    font-size: 0.7em;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.sq-ft-display:hover {
+    background-color: var(--bg-elevated);
+}
+
+.sq-ft-input {
+    display: none;
+    width: 50px;
+    padding: 2px 4px;
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    font-size: 0.7em;
+    text-align: center;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.sq-ft-input.editing {
+    display: block;
+}
+
+.sq-ft-display.editing {
+    display: none;
+}
+
+.instrument-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.add-instrument-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75em;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.add-instrument-btn:hover {
+    background: var(--border-secondary);
+}
+
+.snap-button {
+    background: var(--bg-tertiary);
+    color: #b0b0b0;
+    border: 1px solid var(--border-secondary);
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.75em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.snap-button:hover {
+    background: var(--border-secondary);
+    color: var(--text-primary);
+    transform: scale(1.02);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--bg-secondary);
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    z-index: 1000;
+    border-radius: 4px;
+    border: 1px solid var(--border-primary);
+    top: 100%;
+    left: 0;
+    margin-top: 2px;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-item {
+    color: var(--text-secondary);
+    padding: 6px 10px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    font-size: 0.75em;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.dropdown-item:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.dropdown-item:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.dropdown-header {
+    color: var(--text-muted);
+    padding: 6px 10px 3px 10px;
+    font-size: 0.65em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 2px;
+}
+
+.remove-instrument-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.7em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.remove-instrument-btn::before {
+    content: "✕";
+}
+
+.empty-instruments {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.75em;
+}
+
+.button-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.reset-btn, .print-btn, .print-plot-btn, .save-btn, .load-btn, .add-riser-btn, .remove-riser-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75em;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.save-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.load-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.reset-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.print-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.print-plot-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.add-riser-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.remove-riser-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.chorus-btn {
+    padding: 8px 16px;
+    cursor: pointer;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.chorus-btn:hover {
+    background: var(--border-secondary);
+    transform: scale(1.02);
+}
+
+.reset-btn:hover, .print-btn:hover, .print-plot-btn:hover, .save-btn:hover, .load-btn:hover, .add-riser-btn:hover, .remove-riser-btn:hover, .remove-instrument-btn:hover {
+    background: var(--border-secondary);
+    transform: scale(1.02);
+}
+
+.footer {
+    text-align: center;
+    padding: 8px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-primary);
+    font-size: 0.7em;
+}
+
+.riser-info {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+#timpani-riser-checkbox {
+    transform: scale(1.2);
+    margin: 0 8px;
+}
+
+/* Keyboard navigation selection styles */
+.keyboard-selected-player {
+    stroke: #4299e1 !important;
+    stroke-width: 4 !important;
+}
+
+/* Stage Plot Styles */
+.stage-plot-section {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+}
+
+.stage-plot-header {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.stage-plot-header h2 {
+    font-size: 1.4em;
+    margin-bottom: 4px;
+    font-weight: 400;
+}
+
+.stage-plot-header p {
+    opacity: 0.7;
+    font-size: 0.8em;
+}
+
+.stage-plot-container {
+    padding: 15px;
+    background: var(--bg-tertiary);
+}
+
+.stage-plot {
+    width: 100%;
+    height: auto;
+    background: var(--svg-bg);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+    border: 1px solid var(--border-primary);
+}
+
+.stage-floor {
+    fill: var(--stage-floor);
+}
+
+/* Stage extensions should not be interactive */
+path[data-riser-type="stage-extension"],
+polygon[data-riser-type="stage-extension"] {
+    pointer-events: none;
+    cursor: default;
+}
+
+/* Prevent any focus or selection on SVG elements */
+.stage-plot * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+}
+
+.stage-plot *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.stage-boundary {
+    fill: none;
+    stroke: var(--stage-boundary);
+    stroke-width: 3;
+}
+
+.stage-label, .scale-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.conductor {
+    fill: var(--border-secondary);
+    cursor: move;
+}
+
+.conductor-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+    fill: var(--text-muted);
+    font-weight: 500;
+}
+
+.violin1-player {
+    fill: var(--color-green);
+    stroke: var(--color-green-hover);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease, r 0.3s ease;
+}
+
+.violin1-player:hover {
+    fill: var(--color-green-hover);
+}
+
+.violin1-player.dragging {
+    fill: var(--color-green-drag);
+    stroke: var(--color-green-stroke);
+    stroke-width: 2;
+}
+
+.violin2-player {
+    fill: var(--color-orange);
+    stroke: var(--color-orange-hover);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease, r 0.3s ease;
+}
+
+.violin2-player:hover {
+    fill: var(--color-orange-hover);
+}
+
+.violin2-player.dragging {
+    fill: var(--color-orange-drag);
+    stroke: var(--color-orange-stroke);
+    stroke-width: 2;
+}
+
+.viola-player {
+    fill: var(--color-red);
+    stroke: var(--color-red-hover);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease, r 0.3s ease;
+}
+
+.viola-player:hover {
+    fill: var(--color-red-hover);
+}
+
+.viola-player.dragging {
+    fill: var(--color-red-drag);
+    stroke: var(--color-red-stroke);
+    stroke-width: 2;
+}
+
+.cello-player {
+    fill: var(--color-purple);
+    stroke: var(--color-purple-hover);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease, r 0.3s ease;
+}
+
+.cello-player:hover {
+    fill: var(--color-purple-hover);
+}
+
+.cello-player.dragging {
+    fill: var(--color-purple-drag);
+    stroke: var(--color-purple-stroke);
+    stroke-width: 2;
+}
+
+.bass-player {
+    fill: var(--color-teal);
+    stroke: var(--color-teal-hover);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease, r 0.3s ease;
+}
+
+.bass-player:hover {
+    fill: var(--color-teal-hover);
+}
+
+.bass-player.dragging {
+    fill: var(--color-teal-drag);
+    stroke: var(--color-teal-stroke);
+    stroke-width: 2;
+}
+
+/* Woodwind instruments */
+.woodwind-player {
+    fill: #f6ad55;
+    stroke: #ed8936;
+    stroke-width: 1;
+    cursor: move;
+}
+
+.woodwind-player:hover {
+    fill: #ed8936;
+    stroke: #dd6b20;
+    stroke-width: 2;
+}
+
+.woodwind-player.dragging {
+    fill: #dd6b20;
+    stroke: #c05621;
+    stroke-width: 2;
+}
+
+/* Specific woodwind colors based on instrument type */
+/* Flute matches Violin 1 (green) */
+.woodwind-player[data-instrument-type="flute"] {
+    fill: var(--color-green);
+    stroke: var(--color-green-hover);
+}
+
+.woodwind-player[data-instrument-type="flute"]:hover {
+    fill: var(--color-green-hover);
+    stroke: var(--color-green-drag);
+}
+
+.woodwind-player[data-instrument-type="flute"].dragging {
+    fill: var(--color-green-drag);
+    stroke: var(--color-green-stroke);
+}
+
+/* Oboe matches Violin 2 (orange) */
+.woodwind-player[data-instrument-type="oboe"] {
+    fill: var(--color-orange);
+    stroke: var(--color-orange-hover);
+}
+
+.woodwind-player[data-instrument-type="oboe"]:hover {
+    fill: var(--color-orange-hover);
+    stroke: var(--color-orange-drag);
+}
+
+.woodwind-player[data-instrument-type="oboe"].dragging {
+    fill: var(--color-orange-drag);
+    stroke: var(--color-orange-stroke);
+}
+
+/* Clarinet matches Viola (red) */
+.woodwind-player[data-instrument-type="clarinet"] {
+    fill: var(--color-red);
+    stroke: var(--color-red-hover);
+}
+
+.woodwind-player[data-instrument-type="clarinet"]:hover {
+    fill: var(--color-red-hover);
+    stroke: var(--color-red-drag);
+}
+
+.woodwind-player[data-instrument-type="clarinet"].dragging {
+    fill: var(--color-red-drag);
+    stroke: var(--color-red-stroke);
+}
+
+/* Bassoon matches Bass (teal) */
+.woodwind-player[data-instrument-type="bassoon"] {
+    fill: var(--color-teal);
+    stroke: var(--color-teal-hover);
+}
+
+.woodwind-player[data-instrument-type="bassoon"]:hover {
+    fill: var(--color-teal-hover);
+    stroke: var(--color-teal-drag);
+}
+
+.woodwind-player[data-instrument-type="bassoon"].dragging {
+    fill: var(--color-teal-drag);
+    stroke: var(--color-teal-stroke);
+}
+
+/* Brass colors based on instrument type */
+/* Horn matches Violin 1 (green) */
+.brass-player[data-instrument-type="horn"] {
+    fill: var(--color-green);
+    stroke: var(--color-green-hover);
+}
+
+.brass-player[data-instrument-type="horn"]:hover {
+    fill: var(--color-green-hover);
+    stroke: var(--color-green-drag);
+}
+
+.brass-player[data-instrument-type="horn"].dragging {
+    fill: var(--color-green-drag);
+    stroke: var(--color-green-stroke);
+}
+
+/* Trumpet matches Violin 2 (orange) */
+.brass-player[data-instrument-type="trumpet"] {
+    fill: var(--color-orange);
+    stroke: var(--color-orange-hover);
+}
+
+.brass-player[data-instrument-type="trumpet"]:hover {
+    fill: var(--color-orange-hover);
+    stroke: var(--color-orange-drag);
+}
+
+.brass-player[data-instrument-type="trumpet"].dragging {
+    fill: var(--color-orange-drag);
+    stroke: var(--color-orange-stroke);
+}
+
+/* Trombone matches Viola (red) */
+.brass-player[data-instrument-type="trombone"] {
+    fill: var(--color-red);
+    stroke: var(--color-red-hover);
+}
+
+.brass-player[data-instrument-type="trombone"]:hover {
+    fill: var(--color-red-hover);
+    stroke: var(--color-red-drag);
+}
+
+.brass-player[data-instrument-type="trombone"].dragging {
+    fill: var(--color-red-drag);
+    stroke: var(--color-red-stroke);
+}
+
+/* Tuba matches Bass (teal) */
+.brass-player[data-instrument-type="tuba"] {
+    fill: var(--color-teal);
+    stroke: var(--color-teal-hover);
+}
+
+.brass-player[data-instrument-type="tuba"]:hover {
+    fill: var(--color-teal-hover);
+    stroke: var(--color-teal-drag);
+}
+
+.brass-player[data-instrument-type="tuba"].dragging {
+    fill: var(--color-teal-drag);
+    stroke: var(--color-teal-stroke);
+}
+
+/* Percussion instruments */
+.percussion-player {
+    fill: #e53e3e;
+    stroke: #c53030;
+    stroke-width: 1;
+    cursor: move;
+}
+
+.percussion-player:hover {
+    fill: #c53030;
+    stroke: #9c2a2a;
+    stroke-width: 2;
+}
+
+.percussion-player.dragging {
+    fill: #9c2a2a;
+    stroke: #822727;
+    stroke-width: 2;
+}
+
+/* Keyboard instruments */
+.keyboard-player {
+    fill: #9f7aea;
+    stroke: #805ad5;
+    stroke-width: 1;
+    cursor: move;
+}
+
+.keyboard-player:hover {
+    fill: #805ad5;
+    stroke: #6b46c1;
+    stroke-width: 2;
+}
+
+.keyboard-player.dragging {
+    fill: #6b46c1;
+    stroke: #553c9a;
+    stroke-width: 2;
+}
+
+.player-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 10px;
+    fill: white;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+.player-selected {
+    stroke: #ff6b6b !important;
+    stroke-width: 3 !important;
+}
+
+/* Chorus singers */
+.chorus-singer {
+    fill: var(--chorus-singer);
+    stroke: var(--chorus-singer-stroke);
+    stroke-width: 1;
+    cursor: move;
+    transition: fill 0.2s ease;
+}
+
+.chorus-singer:hover {
+    fill: var(--chorus-singer-hover);
+    stroke: var(--chorus-singer-stroke);
+    stroke-width: 2;
+}
+
+.chorus-singer.dragging {
+    fill: var(--chorus-singer-drag);
+    stroke: var(--chorus-singer-stroke);
+    stroke-width: 2;
+}
+
+.selection-rectangle {
+    fill: transparent;
+    stroke: transparent;
+    stroke-width: 0;
+    pointer-events: none;
+    display: none;
+}
+
+/* Podium styling */
+.podium-draggable {
+    cursor: move;
+}
+
+.podium-draggable:hover {
+    fill: #4a5568;
+    stroke: #2d3748;
+}
+
+.podium-draggable.dragging {
+    fill: #1a202c;
+    stroke: #000000;
+    stroke-width: 3;
+}
+
+.concert-grand-draggable {
+    cursor: move;
+}
+
+.concert-grand-draggable:hover {
+    fill: #1a1a1a;
+    stroke: #666666;
+}
+
+.concert-grand-draggable.dragging {
+    fill: #000000;
+    stroke: #888888;
+    stroke-width: 3;
+}
+
+.podium-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Riser styling */
+.riser-draggable {
+    cursor: move;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Prevent focus outline on risers */
+.riser-draggable:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Prevent any selection highlighting */
+.riser-draggable::selection {
+    background: transparent;
+}
+
+.riser-draggable::-moz-selection {
+    background: transparent;
+}
+
+.riser-draggable:hover {
+    fill: #6b7280;
+    stroke: #374151;
+}
+
+.riser-draggable.dragging {
+    fill: #1f2937;
+    stroke: #000000;
+    stroke-width: 3;
+}
+
+/* Selected risers - inner selection rectangle */
+.riser-selection-indicator {
+    fill: none !important;
+    stroke: #fbbf24 !important;
+    stroke-width: 3 !important;
+    pointer-events: none !important;
+}
+
+.riser-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    pointer-events: none;
+    user-select: none;
+}
+
+.stage-plot-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.stage-plot-controls button {
+    padding: 6px 12px;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75em;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.stage-plot-controls button:hover {
+    opacity: 0.9;
+}
+
+.reset-positions-btn {
+    background: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.debug-btn {
+    background: #c96d2b;
+    color: #ffffff;
+}
+
+.export-btn {
+    background: #3a6da8;
+    color: #ffffff;
+}
+
+.multi-select-instructions {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.7em;
+    color: var(--text-muted) !important;
+}
+
+.debug-info {
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    border: 1px solid var(--border-primary);
+    display: none;
+}
+
+.debug-info.show {
+    display: block;
+}
+
+.debug-info h4 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 0.85em;
+}
+
+.debug-info div {
+    font-size: 0.7em;
+    color: var(--text-secondary);
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+.debug-grid {
+    stroke: #e2e8f0;
+    stroke-width: 1;
+    opacity: 0.5;
+}
+
+.debug-coordinates {
+    font-size: 10px;
+    fill: #718096;
+    font-family: monospace;
+}
+
+.position-highlight {
+    fill: none;
+    stroke: #4299e1;
+    stroke-width: 2;
+    stroke-dasharray: 3,3;
+    opacity: 0;
+}
+
+.position-highlight.show {
+    opacity: 1;
+}
+
+.print-date, .print-summary {
+    display: none;
+}
+
+@media print {
+    .print-date, .print-summary {
+        display: block;
+    }
+    
+    /* Print plot only styles */
+    body.print-plot-only .main-container > *:not(.content-wrapper) {
+        display: none;
+    }
+    
+    body.print-plot-only .content-wrapper > .inputs-container {
+        display: none;
+    }
+    
+    body.print-plot-only .stage-plot-section > .stage-plot-header {
+        display: none;
+    }
+    
+    body.print-plot-only .stage-plot-controls,
+    body.print-plot-only .debug-info,
+    body.print-plot-only .footer,
+    body.print-plot-only .multi-select-instructions {
+        display: none !important;
+    }
+    
+    /* Hide all divs in stage-plot-section except the stage-plot-container */
+    body.print-plot-only .stage-plot-section > div:not(.stage-plot-container) {
+        display: none !important;
+    }
+    
+    body.print-plot-only {
+        margin: 0;
+        padding: 0;
+    }
+    
+    body.print-plot-only .stage-plot-container-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0.5in;
+        box-sizing: border-box;
+    }
+    
+    body.print-plot-only .stage-plot-section {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    body.print-plot-only .stage-plot-container {
+        width: 100%;
+        height: 100%;
+        flex: 1;
+        max-width: none;
+        max-height: none;
+        background: white;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    body.print-plot-only .stage-plot {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+    
+    .inputs-container,
+    .stage-plot-container-wrapper {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .sections-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-group {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .input-group label {
+        grid-column: 1 / -1;
+    }
+    
+    .button-row {
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   PERCUSSION BLOB STYLES
+   ============================================ */
+
+.percussion-blob {
+    transition: fill 0.2s ease;
+}
+
+.percussion-blob:hover {
+    fill: rgba(139, 92, 246, 0.4);
+}
+
+.blob-control-point {
+    transition: r 0.15s ease, fill 0.15s ease;
+}
+
+.blob-control-point:hover {
+    r: 8;
+    fill: #7c3aed;
+}
+
+#percussion-blob-group text {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Blob Controls UI */
+.blob-controls {
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--bg-elevated);
+    border-radius: 6px;
+    border: 1px solid var(--border-primary);
+}
+
+.blob-control-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.blob-control-label {
+    font-size: 0.75em;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.blob-vertex-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: #7952b3;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.blob-vertex-btn:hover {
+    background: #6644a3;
+}
+
+.blob-vertex-btn:active {
+    transform: scale(0.95);
+}
+
+.blob-vertex-count {
+    min-width: 24px;
+    text-align: center;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text-primary);
+}

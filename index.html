@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage Blobber</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="container">
+            <div class="header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
+                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+
+                        <img src="assets/blobberlogo.png" alt="Stage Blobber" class="site-logo" style="max-height: 120px; height: auto; width: auto;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="save-btn" onclick="saveState()">Save</button>
+                            <button class="load-btn" onclick="loadState()">Load</button>
+                            <button class="print-plot-btn" onclick="printStagePlot()">Print Plot</button>
+                            <select id="theme-selector" onchange="changeTheme(this.value)" class="theme-selector">
+                                <option value="dark">Dark Mode</option>
+                                <option value="nord">Nord</option>
+                                <option value="solarized">Solarized Light</option>
+                            </select>
+                            <button onclick="undo()" title="Undo (Ctrl+Z)" style="background: var(--bg-elevated, #2d3148); color: var(--text-primary, #fff); border: 1px solid var(--border-primary, #555); border-radius: 6px; padding: 7px 18px; font-size: 0.95em; font-weight: 700; cursor: pointer;">&#8592; Undo</button>
+                            <button onclick="redo()" title="Redo (Ctrl+Shift+Z)" style="background: var(--bg-elevated, #2d3148); color: var(--text-primary, #fff); border: 1px solid var(--border-primary, #555); border-radius: 6px; padding: 7px 18px; font-size: 0.95em; font-weight: 700; cursor: pointer;">Redo &#8594;</button>
+                        </div>
+                    </div>
+                    <!-- Beta label + bug report -->
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding-bottom: 4px;">
+                        <span style="font-size: 1.1em; font-weight: 800; letter-spacing: 0.12em; color: #f59e0b; text-transform: uppercase;">&#9888; Beta Testing</span>
+                        <button onclick="openBugReport()" style="background: #dc2626; color: white; border: none; border-radius: 6px; padding: 7px 16px; font-size: 0.9em; font-weight: 700; cursor: pointer; letter-spacing: 0.04em;">&#128027; Report Bug</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bug Report Modal -->
+        <div id="bug-report-modal" onclick="if(event.target===this)closeBugReport()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+            <div style="background:var(--bg-elevated, #1e2030); border:1px solid var(--border-primary, #444); border-radius:10px; padding:28px 32px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+                <h2 style="margin:0 0 6px; color:var(--text-primary,#fff); font-size:1.2em;">&#128027; Report a Bug</h2>
+                <p style="margin:0 0 16px; color:var(--text-secondary,#aaa); font-size:0.9em;">Describe what happened and how to reproduce it.</p>
+                <input id="bug-subject" type="text" placeholder="Subject (e.g. Riser won't drag)" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:8px 10px; border-radius:6px; border:1px solid var(--border-primary,#555); background:var(--bg-primary,#13151f); color:var(--text-primary,#fff); font-size:0.95em;">
+                <textarea id="bug-message" rows="6" placeholder="Describe the bug…" style="width:100%; box-sizing:border-box; padding:8px 10px; border-radius:6px; border:1px solid var(--border-primary,#555); background:var(--bg-primary,#13151f); color:var(--text-primary,#fff); font-size:0.95em; resize:vertical;"></textarea>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                    <button onclick="closeBugReport()" style="padding:8px 18px; border-radius:6px; border:1px solid var(--border-primary,#555); background:transparent; color:var(--text-primary,#fff); cursor:pointer; font-size:0.95em;">Cancel</button>
+                    <button onclick="submitBugReport()" style="padding:8px 18px; border-radius:6px; border:none; background:#dc2626; color:#fff; cursor:pointer; font-weight:700; font-size:0.95em;">Send Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content: Inputs on Left, Stage Plot on Right -->
+        <div class="content-wrapper">
+            <!-- Left Side: Instrument Inputs -->
+            <div class="inputs-container">
+                <div class="container">
+                    <div class="calculator">
+                <div style="margin-bottom: 15px; padding: 10px; background: var(--bg-elevated); border-radius: 5px; border: 1px solid var(--border-primary);">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="collision-detection-toggle" checked onchange="toggleCollisionDetection()" style="margin-right: 8px;">
+                        <span style="color: var(--text-primary); font-size: 1em; font-weight: 600;">Prevent Player Overlap</span>
+                    </label>
+                </div>
+                <div class="sections-grid">
+                    <!-- Concert Grand Soloist Section -->
+                    <div style="padding: 10px; background: var(--bg-elevated); border-radius: 5px; border: 1px solid var(--border-primary); margin-bottom: 10px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="concert-grand-toggle" onchange="toggleConcertGrand()" style="margin-right: 8px;">
+                            <h3 style="margin: 0; color: var(--text-primary); font-size: 1em; font-weight: 600;">Concert Grand Soloist</h3>
+                        </label>
+                    </div>
+
+                    <!-- Chorus Section -->
+                    <div style="padding: 10px; background: var(--bg-elevated); border-radius: 5px; border: 1px solid var(--border-primary); margin-bottom: 10px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="chorus-toggle" onchange="toggleChorus()" style="margin-right: 8px;">
+                            <h3 style="margin: 0; color: var(--text-primary); font-size: 1em; font-weight: 600;">Chorus</h3>
+                        </label>
+                    </div>
+                    <div>
+                        <div id="chorus-controls" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <button class="chorus-btn" onclick="addChorusRow()">+ Add Row</button>
+                                <button class="chorus-btn" onclick="removeChorusRow()">− Remove Row</button>
+                                <span id="chorus-row-count" style="margin-left: 10px; font-weight: bold; color: var(--text-primary);">Rows: 1</span>
+                            </div>
+                            <div id="chorus-row-inputs" style="margin-top: 10px;">
+                                <!-- Row inputs will be dynamically generated here -->
+                            </div>
+                            <div style="margin-top: 15px; padding: 10px; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: 5px;">
+                                <strong style="color: var(--text-primary);">Total Singers: <span id="total-singers-count">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- String Section -->
+                    <div class="section">
+                        <h3>String Section</h3>
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 6px 0; margin-bottom: 8px;">
+                            <input type="checkbox" id="use-default-seating" checked style="margin-right: 8px;">
+                            <button id="snap-strings-btn" class="snap-button">Snap to Default Seating</button>
+                        </label>
+                        <div class="input-group compact">
+                            <label>Violin 1 Players:</label>
+                            <input type="number" id="violin1" min="0" max="50" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="violin1">7.5 sq ft each</span>
+                                <input type="number" id="violin1_sqft" class="sq-ft-input" min="1" max="100" value="7.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Violin 2 Players:</label>
+                            <input type="number" id="violin2" min="0" max="50" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="violin2">7.5 sq ft each</span>
+                                <input type="number" id="violin2_sqft" class="sq-ft-input" min="1" max="100" value="7.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Viola Players:</label>
+                            <input type="number" id="viola" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="viola">7.5 sq ft each</span>
+                                <input type="number" id="viola_sqft" class="sq-ft-input" min="1" max="100" value="7.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Cello Players:</label>
+                            <input type="number" id="cello" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="cello">11 sq ft each</span>
+                                <input type="number" id="cello_sqft" class="sq-ft-input" min="1" max="100" value="11" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Bass Players:</label>
+                            <input type="number" id="bass" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="bass">11.5 sq ft each</span>
+                                <input type="number" id="bass_sqft" class="sq-ft-input" min="1" max="100" value="11.5" step="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Woodwind Section -->
+                    <div class="section">
+                        <h3>Woodwind Section</h3>
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 6px 0; margin-bottom: 8px;">
+                            <input type="checkbox" id="use-default-woodwind-seating" checked style="margin-right: 8px;">
+                            <button id="snap-woodwinds-btn" class="snap-button">Snap to Default Seating</button>
+                        </label>
+                        <div class="input-group compact">
+                            <label>Flute Players:</label>
+                            <input type="number" id="flute" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="flute">6.5 sq ft each</span>
+                                <input type="number" id="flute_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Oboe Players:</label>
+                            <input type="number" id="oboe" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="oboe">6.5 sq ft each</span>
+                                <input type="number" id="oboe_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Clarinet Players:</label>
+                            <input type="number" id="clarinet" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="clarinet">6.5 sq ft each</span>
+                                <input type="number" id="clarinet_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Bassoon Players:</label>
+                            <input type="number" id="bassoon" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="bassoon">6.5 sq ft each</span>
+                                <input type="number" id="bassoon_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brass Section -->
+                    <div class="section">
+                        <h3>Brass Section</h3>
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 6px 0; margin-bottom: 8px;">
+                            <input type="checkbox" id="use-default-brass-seating" checked style="margin-right: 8px;">
+                            <button id="snap-brass-btn" class="snap-button">Snap to Default Seating</button>
+                        </label>
+                        <div class="input-group compact">
+                            <label>Horn Players:</label>
+                            <input type="number" id="horn" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="horn">6.5 sq ft each</span>
+                                <input type="number" id="horn_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Trumpet Players:</label>
+                            <input type="number" id="trumpet" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="trumpet">6.5 sq ft each</span>
+                                <input type="number" id="trumpet_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Trombone Players:</label>
+                            <input type="number" id="trombone" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="trombone">6.5 sq ft each</span>
+                                <input type="number" id="trombone_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Tuba Players:</label>
+                            <input type="number" id="tuba" min="0" max="20" value="0">
+                            <div style="display: none;">
+                                <span class="sq-ft-display" data-instrument="tuba">6.5 sq ft each</span>
+                                <input type="number" id="tuba_sqft" class="sq-ft-input" min="1" max="100" value="6.5" step="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Winds -->
+                    <div class="section">
+                        <h3>Other Winds</h3>
+                        <div class="instrument-dropdown">
+                            <button class="add-instrument-btn" onclick="toggleDropdown('woodwinds')">Add Instrument</button>
+                            <div class="dropdown-content" id="instrumentDropdownWoodwinds">
+                                <div class="dropdown-header">Other Woodwinds</div>
+                                <div class="dropdown-item" onclick="addInstrument('saxophone', 'Saxophone', 8)">Saxophone</div>
+                                <div class="dropdown-header">Other Brass</div>
+                                <div class="dropdown-item" onclick="addInstrument('cornet', 'Cornet', 10)">Cornet</div>
+                                <div class="dropdown-item" onclick="addCustomInstrument('woodwindsInstruments')" style="border-top: 1px solid #e2e8f0; font-weight: bold;">➕ Add Custom Item</div>
+                            </div>
+                        </div>
+                        <div class="empty-instruments" id="emptyWoodwinds"></div>
+                        <div id="woodwindsInstruments"></div>
+                    </div>
+
+                    <!-- Percussion Section -->
+                    <div class="section">
+                        <h3>Percussion</h3>
+                        <div class="instrument-dropdown">
+                            <button class="add-instrument-btn" onclick="toggleDropdown('percussion')">Add Instrument</button>
+                            <div class="dropdown-content" id="instrumentDropdownPercussion">
+                                <div class="dropdown-item" onclick="addInstrument('snare', 'Snare Drum', 16, 1)">Snare Drum</div>
+                                <div class="dropdown-item" onclick="addInstrument('xylophone', 'Xylophone', 15, 1)">Xylophone</div>
+                                <div class="dropdown-item" onclick="addInstrument('marimba', 'Marimba', 36, 1)">Marimba</div>
+                                <div class="dropdown-item" onclick="addInstrument('cymbals', 'Crash Cymbals', 9, 1)">Crash Cymbals</div>
+                                <div class="dropdown-item" onclick="addInstrument('vibraphone', 'Vibraphone', 18, 1)">Vibraphone</div>
+                                <div class="dropdown-item" onclick="addInstrument('glockenspiel', 'Glockenspiel', 7.5, 1)">Glockenspiel</div>
+                                <div class="dropdown-item" onclick="addInstrument('chimes', 'Chimes', 15, 1)">Chimes</div>
+                                <div class="dropdown-item" onclick="addInstrument('bassDrum', 'Bass Drum', 25, 1)">Bass Drum</div>
+                                <div class="dropdown-item" onclick="addInstrument('cymbal', 'Suspended Cymbal', 9, 1)">Suspended Cymbal</div>
+                                <div class="dropdown-item" onclick="addInstrument('tamtam', 'Tam-tam', 25, 1)">Tam-tam</div>
+                                <div class="dropdown-item" onclick="addInstrument('bongos', 'Bongos', 6, 1)">Bongos</div>
+                                <div class="dropdown-item" onclick="addInstrument('tom', 'Tom (single, on stand)', 9, 1)">Tom (single, on stand)</div>
+                                <div class="dropdown-item" onclick="addInstrument('belltree', 'Bell Tree', 6, 1)">Bell Tree</div>
+                                <div class="dropdown-item" onclick="addInstrument('marktree', 'Mark Tree', 6, 1)">Mark Tree</div>
+                                <div class="dropdown-item" onclick="addInstrument('smalltable', 'Small Table (toys/misc)', 12, 1)">Small Table (toys/misc)</div>
+                                <div class="dropdown-item" onclick="addInstrument('drumkit', 'Drum Kit (5-piece)', 50, 1)">Drum Kit (5-piece)</div>
+                                <div class="dropdown-item" onclick="addCustomInstrument('percussionInstruments')" style="border-top: 1px solid #e2e8f0; font-weight: bold;">➕ Add Custom Item</div>
+                            </div>
+                        </div>
+                        <div class="empty-instruments" id="emptyPercussion"></div>
+                        <div id="percussionInstruments"></div>
+                        
+                        <!-- Blob Shape Controls -->
+                        <div id="blobControls" class="blob-controls" style="display: none;">
+                            <div class="blob-control-row">
+                                <span class="blob-control-label">Blob Shape Vertices:</span>
+                                <button class="blob-vertex-btn" onclick="removeBlobVertex()">−</button>
+                                <span id="blobVertexCount" class="blob-vertex-count">8</span>
+                                <button class="blob-vertex-btn" onclick="addBlobVertex()">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyboard & Harp Section -->
+                    <div class="section">
+                        <h3>Keyboard & Harp</h3>
+                        <div class="instrument-dropdown">
+                            <button class="add-instrument-btn" onclick="toggleDropdown('keyboard')">Add Instrument</button>
+                            <div class="dropdown-content" id="instrumentDropdownKeyboard">
+                                <div class="dropdown-header">Keyboard</div>
+                                <div class="dropdown-item" onclick="addInstrument('piano', 'Piano', 40)">Piano</div>
+                                <div class="dropdown-item" onclick="addInstrument('celeste', 'Celesta', 15)">Celesta</div>
+                                <div class="dropdown-item" onclick="addInstrument('keyboard', 'Keyboard', 15)">Keyboard</div>
+                                <div class="dropdown-header">Harp</div>
+                                <div class="dropdown-item" onclick="addInstrument('harp', 'Concert Harp', 20)">Concert Harp</div>
+                                <div class="dropdown-item" onclick="addCustomInstrument('keyboardInstruments')" style="border-top: 1px solid #e2e8f0; font-weight: bold;">➕ Add Custom Item</div>
+                            </div>
+                        </div>
+                        <div class="empty-instruments" id="emptyKeyboard"></div>
+                        <div id="keyboardInstruments"></div>
+                    </div>
+
+                    <!-- Risers Section -->
+                    <div class="section">
+                        <h3>Risers</h3>
+                        
+                        <!-- Timpani Riser -->
+                        <div class="input-group">
+                            <label for="timpani-riser-checkbox">Timpani (8' × 8'):</label>
+                            <input type="checkbox" id="timpani-riser-checkbox" checked onchange="toggleTimpaniRiser()">
+                        </div>
+
+                        <!-- Brass Risers -->
+                        <div class="input-group">
+                            <label for="brass-riser-1-checkbox">Brass 1 (8' × 4'):</label>
+                            <input type="checkbox" id="brass-riser-1-checkbox" checked onchange="toggleBrassRiser('brass-riser-1')">
+                        </div>
+                        <div class="input-group">
+                            <label for="brass-riser-2-checkbox">Brass 2 (8' × 4'):</label>
+                            <input type="checkbox" id="brass-riser-2-checkbox" checked onchange="toggleBrassRiser('brass-riser-2')">
+                        </div>
+                        <div class="input-group">
+                            <label for="brass-riser-3-checkbox">Brass 3 (8' × 4'):</label>
+                            <input type="checkbox" id="brass-riser-3-checkbox" checked onchange="toggleBrassRiser('brass-riser-3')">
+                        </div>
+                        <div class="input-group">
+                            <label for="brass-riser-4-checkbox">Brass 4 (8' × 4'):</label>
+                            <input type="checkbox" id="brass-riser-4-checkbox" checked onchange="toggleBrassRiser('brass-riser-4')">
+                        </div>
+                        <div class="input-group">
+                            <label for="brass-riser-5-checkbox">Brass 5 (8' × 4'):</label>
+                            <input type="checkbox" id="brass-riser-5-checkbox" checked onchange="toggleBrassRiser('brass-riser-5')">
+                        </div>
+
+                        <!-- Woodwind Risers -->
+                        <div class="input-group">
+                            <label for="woodwind-riser-1-checkbox">Woodwind 1 (8' × 4'):</label>
+                            <input type="checkbox" id="woodwind-riser-1-checkbox" checked onchange="toggleWoodwindRiser('woodwind-riser-1')">
+                        </div>
+                        <div class="input-group">
+                            <label for="woodwind-riser-2-checkbox">Woodwind 2 (8' × 4'):</label>
+                            <input type="checkbox" id="woodwind-riser-2-checkbox" checked onchange="toggleWoodwindRiser('woodwind-riser-2')">
+                        </div>
+                        <div class="input-group">
+                            <label for="woodwind-riser-3-checkbox">Woodwind 3 (8' × 4'):</label>
+                            <input type="checkbox" id="woodwind-riser-3-checkbox" checked onchange="toggleWoodwindRiser('woodwind-riser-3')">
+                        </div>
+                        <div class="input-group">
+                            <label for="woodwind-riser-4-checkbox">Woodwind 4 (8' × 4'):</label>
+                            <input type="checkbox" id="woodwind-riser-4-checkbox" checked onchange="toggleWoodwindRiser('woodwind-riser-4')">
+                        </div>
+
+                        <!-- Extra Risers Generator -->
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-primary);">
+                            <div class="input-group">
+                                <label for="riser-size-select">Extra Riser Size:</label>
+                                <select id="riser-size-select">
+                                    <option value="8x4">8' × 4' Riser</option>
+                                    <option value="4x4">4' × 4' Riser</option>
+                                    <option value="8x3">8' × 3' Riser</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <button class="add-riser-btn" onclick="addNewRiser()">Add Riser</button>
+                                <button class="remove-riser-btn" onclick="removeLastRiser()">Remove Last</button>
+                            </div>
+                            <div class="riser-info">
+                                <span id="extra-riser-count">Extra risers: 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage Extensions Section -->
+                    <div class="section">
+                        <h3>Stage Extensions</h3>
+                        <div class="input-group">
+                            <label for="stage-extension-1-checkbox">Stage Extension 1:</label>
+                            <input type="checkbox" id="stage-extension-1-checkbox" onchange="toggleStageExtension('stage-extension-1')">
+                            <div>
+                                <span class="riser-info">4' extension following arc edge</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="stage-extension-2-checkbox">Stage Extension 2:</label>
+                            <input type="checkbox" id="stage-extension-2-checkbox" onchange="toggleStageExtension('stage-extension-2')">
+                            <div>
+                                <span class="riser-info">Additional 4' extension area</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="print-date" style="display: none;"></div>
+                
+                <div class="print-summary" style="display: none;">
+                    <h3>Stage Blobber - Space Calculation Summary</h3>
+                    <div id="printSummaryContent"></div>
+                </div>
+
+                <!-- Hidden file input for loading -->
+                <input type="file" id="loadFileInput" accept=".json" style="display: none;" onchange="handleFileLoad(event)">
+            </div>
+
+            <div class="footer">
+                <p>Stage Blobber - 1481.7 sq ft total stage space (42' × 35' × 39' trapezoid minus 19.8 sq ft podium)</p>
+            </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Stage Plot -->
+            <div class="stage-plot-container-wrapper">
+                <div class="stage-plot-section">
+            <div class="stage-plot-container" style="position: relative;">
+                <div id="overlap-warning" style="display: none; position: absolute; top: 8px; left: 8px; z-index: 100; background: rgba(220, 50, 50, 0.9); color: #fff; padding: 6px 12px; border-radius: 5px; font-size: 0.85em; font-weight: 600; pointer-events: none;">Warning: Generated Players are Overlapping</div>
+                <svg class="stage-plot" viewBox="0 0 1000 940" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Scale reference grid (every 5 feet = 75 pixels) -->
+                    <defs>
+                        <pattern id="scaleGrid" x="50" y="30" width="75" height="75" patternUnits="userSpaceOnUse">
+                            <path id="grid-line" d="M 75 0 L 0 0 0 75" fill="none" stroke="#4a4a4a" stroke-width="1" opacity="0.3"/>
+                        </pattern>
+                    </defs>
+                    
+                    <!-- Background grid -->
+                    <rect x="50" y="50" width="900" height="840" fill="url(#scaleGrid)"/>
+                    
+                    <!-- Trapezoidal Stage outline -->
+                    <!-- Downstage: 42' = 630px, Upstage: 35' = 525px, Depth: 39' = 585px -->
+                    <!-- Center the trapezoid in the viewBox -->
+                    <!-- Stage floor (filled) -->
+                    <polygon class="stage-floor" 
+                             points="237.5,80 762.5,80 815,665 185,665" 
+                             fill="#707070" stroke="none"/>
+                    <!-- Stage boundary (outline) -->
+                    <polygon class="stage-boundary" 
+                             points="237.5,80 762.5,80 815,665 185,665" 
+                             fill="none" stroke="#808080" stroke-width="3"/>
+                    
+                    <!-- Center line (dividing stage right/left) -->
+                    <line id="center-line" x1="500" y1="80" x2="500" y2="845" stroke="#808080" stroke-width="2" stroke-dasharray="5,5" opacity="0.7"/>
+                    
+                    <!-- The arc edge (touches downstage corners and center line bottom) -->
+                    <!-- Arc floor -->
+                    <path id="arc-floor" class="stage-floor" d="M 185,665 A 857,857 0 0 0 815,665 L 815,665 Z" 
+                          fill="#707070" stroke="none"/>
+                    <!-- Arc boundary -->
+                    <path class="stage-boundary" 
+                          d="M 185,665 A 857,857 0 0 0 815,665" 
+                          fill="none" stroke="#808080" stroke-width="3"/>
+                    
+                    <!-- Dark gray rectangle -->
+                    <polygon points="185,665 245,665 245,685 185,685" 
+                             fill="#707070" stroke="#808080" stroke-width="1"/>
+                    
+                    <!-- Dark gray rectangle (right side) -->
+                    <polygon points="755,665 755,685 815,685 815,665" 
+                             fill="#707070" stroke="#808080" stroke-width="1"/>
+                    
+                    <!-- Hashmarks on downstage edge -->
+                    <line class="stage-hashmark" x1="245" y1="660" x2="245" y2="670" stroke="#808080" stroke-width="2"/>
+                    <line class="stage-hashmark" x1="755" y1="660" x2="755" y2="670" stroke="#808080" stroke-width="2"/>
+                    
+                    <!-- Stage Extension 1 -->
+                    <g id="stage-extension-1-section" style="display: none;">
+                        <!-- Extension 1 filled area -->
+                        <path id="stage-extension-1" class="stage-floor"
+                              d="M 185,665 A 857,857 0 0 0 815,665 L 755,685 L 825,785 L 175,785 L 245,685 Z" 
+                              fill="#707070" stroke="#808080" stroke-width="2" 
+                              data-riser-type="stage-extension"/>
+                        <!-- Extension 1 boundary lines -->
+                        <line class="stage-extension-line" x1="245" y1="685" x2="175" y2="785" stroke="#808080" stroke-width="2"/>
+                        <line class="stage-extension-line" x1="755" y1="685" x2="825" y2="785" stroke="#808080" stroke-width="2"/>
+                        <line class="stage-extension-line" x1="175" y1="785" x2="825" y2="785" stroke="#808080" stroke-width="2"/>
+                        <line class="stage-extension-line" x1="217" y1="725" x2="783" y2="725" stroke="#808080" stroke-width="2"/>
+                        <!-- Extension 1 label -->
+                        <text id="stage-extension-1-label" x="500" y="725" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="12" font-weight="bold">STAGE EXTENSION 1</text>
+                    </g>
+
+                    <!-- Stage Extension 2 -->
+                    <g id="stage-extension-2-section" style="display: none;">
+                        <!-- Extension 2 filled area -->
+                        <polygon id="stage-extension-2" class="stage-floor"
+                                 points="175,785 133,845 867,845 825,785" 
+                                 fill="#606060" stroke="#808080" stroke-width="2" 
+                                 data-riser-type="stage-extension"/>
+                        <!-- Extension 2 boundary lines -->
+                        <line class="stage-extension-line" x1="175" y1="785" x2="133" y2="845" stroke="#808080" stroke-width="2"/>
+                        <line class="stage-extension-line" x1="825" y1="785" x2="867" y2="845" stroke="#808080" stroke-width="2"/>
+                        <line class="stage-extension-line" x1="133" y1="845" x2="867" y2="845" stroke="#808080" stroke-width="2"/>
+                        <!-- Extension 2 label -->
+                        <text id="stage-extension-2-label" x="500" y="815" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="12" font-weight="bold">STAGE EXTENSION 2</text>
+                    </g>
+                    
+                    <!-- Stage labels with measurements -->
+                    <text class="stage-label" x="25" y="365" transform="rotate(-90 25 365)" text-anchor="middle">STAGE RIGHT</text>
+                    <text class="stage-label" x="975" y="365" transform="rotate(90 975 365)" text-anchor="middle">STAGE LEFT</text>
+                    <text class="stage-label" x="500" y="70" text-anchor="middle">UPSTAGE (35')</text>
+                    <text class="stage-label" x="500" y="935" text-anchor="middle">DOWNSTAGE (42')</text>
+                    
+                    <!-- Depth measurements on sides -->
+                    <text class="stage-label" x="160" y="372" transform="rotate(-90 160 372)" text-anchor="middle">39' DEEP</text>
+                    <text class="stage-label" x="840" y="372" transform="rotate(90 840 372)" text-anchor="middle">39' DEEP</text>
+                    
+                    <!-- Scale ruler -->
+                    <g id="scale-ruler">
+                        <line class="ruler-line" x1="60" y1="910" x2="210" y2="910" stroke="#808080" stroke-width="2"/>
+                        <line class="ruler-line" x1="60" y1="905" x2="60" y2="915" stroke="#808080" stroke-width="2"/>
+                        <line class="ruler-line" x1="210" y1="905" x2="210" y2="915" stroke="#808080" stroke-width="2"/>
+                        <text x="135" y="930" text-anchor="middle" class="scale-label">10 feet</text>
+                    </g>
+                    
+
+                    
+                    <!-- Conductor's Podium -->
+                    <g id="podium-section">
+                        <!-- Main podium square (50" x 50") -->
+                        <rect id="podium-main" x="468.75" y="602.5" width="62.5" height="62.5" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-podium-part="main" class="podium-draggable podium-element"/>
+                        <!-- Step rectangle (27" x 13") on stage right side - rotated -->
+                        <rect id="podium-step" x="452.5" y="616.875" width="16.25" height="33.75" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-podium-part="step" class="podium-draggable podium-element"/>
+                        <!-- Podium label -->
+                        <text id="podium-label" x="500" y="640" text-anchor="middle" 
+                              class="podium-label" fill="white" font-size="12" font-weight="bold">PODIUM</text>
+                    </g>
+
+                    <!-- Concert Grand Piano (9' × 5') with 7' × 1' cutout at lower right -->
+                    <g id="concert-grand-section" style="display: none;">
+                        <!-- 9' × 5' = 135px × 75px, cutout 7' × 1' = 105px × 15px, rounded corners (30px outer, 10px inner) -->
+                        <path id="concert-grand-rect" 
+                              d="M 432.5 667.5
+                                 L 537.5 667.5
+                                 Q 567.5 667.5 567.5 697.5
+                                 L 567.5 697.5
+                                 Q 567.5 727.5 537.5 727.5
+                                 L 472.5 727.5
+                                 Q 462.5 727.5 462.5 737.5
+                                 L 462.5 732.5
+                                 Q 462.5 742.5 452.5 742.5
+                                 L 432.5 742.5
+                                 Z"
+                              fill="#000000" stroke="#333333" stroke-width="2" 
+                              class="concert-grand-draggable"/>
+                        <text id="concert-grand-label" x="490" y="705" text-anchor="middle" 
+                              fill="white" font-size="11" font-weight="bold">CONCERT GRAND</text>
+                    </g>
+
+                    <!-- Timpani Riser -->
+                    <g id="timpani-riser-section">
+                        <!-- Timpani riser (8' x 8') positioned in upstage corner -->
+                        <rect id="timpani-riser" x="260" y="95" width="120" height="120" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="timpani" class="riser-draggable"/>
+                        <!-- Riser label -->
+                        <text id="timpani-riser-label" x="320" y="160" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="12" font-weight="bold">TIMPANI</text>
+                    </g>
+
+                    <!-- Brass Risers -->
+                    <g id="brass-risers-section">
+                        <!-- Brass riser 1 (8' x 4') - positioned upstage left -->
+                        <rect id="brass-riser-1" x="380" y="95" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="brass" class="riser-draggable"/>
+                        <text id="brass-riser-1-label" x="440" y="130" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">BRASS 1</text>
+                        
+                        <!-- Brass riser 2 (8' x 4') - positioned upstage center -->
+                        <rect id="brass-riser-2" x="500" y="95" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="brass" class="riser-draggable"/>
+                        <text id="brass-riser-2-label" x="560" y="130" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">BRASS 2</text>
+                        
+                        <!-- Brass riser 3 (8' x 4') - positioned upstage center-right -->
+                        <rect id="brass-riser-3" x="620" y="95" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="brass" class="riser-draggable"/>
+                        <text id="brass-riser-3-label" x="680" y="130" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">BRASS 3</text>
+                        
+                        <!-- Brass riser 4 (8' x 4') - positioned downstage left -->
+                        <rect id="brass-riser-4" x="380" y="155" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="brass" class="riser-draggable"/>
+                        <text id="brass-riser-4-label" x="440" y="190" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">BRASS 4</text>
+                        
+                        <!-- Brass riser 5 (8' x 4') - positioned downstage center-left -->
+                        <rect id="brass-riser-5" x="500" y="155" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="brass" class="riser-draggable"/>
+                        <text id="brass-riser-5-label" x="560" y="190" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">BRASS 5</text>
+                    </g>
+
+                    <!-- Woodwind Risers -->
+                    <g id="woodwind-risers-section">
+                        <!-- Woodwind riser 1 (8' x 4') - positioned mid-stage left -->
+                        <rect id="woodwind-riser-1" x="380" y="245" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="woodwind" class="riser-draggable"/>
+                        <text id="woodwind-riser-1-label" x="440" y="280" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">WOODWIND 1</text>
+                        
+                        <!-- Woodwind riser 2 (8' x 4') - positioned mid-stage center -->
+                        <rect id="woodwind-riser-2" x="500" y="245" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="woodwind" class="riser-draggable"/>
+                        <text id="woodwind-riser-2-label" x="560" y="280" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">WOODWIND 2</text>
+                        
+                        <!-- Woodwind riser 3 (8' x 4') - positioned mid-stage left -->
+                        <rect id="woodwind-riser-3" x="380" y="305" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="woodwind" class="riser-draggable"/>
+                        <text id="woodwind-riser-3-label" x="440" y="340" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">WOODWIND 3</text>
+                        
+                        <!-- Woodwind riser 4 (8' x 4') - positioned mid-stage center -->
+                        <rect id="woodwind-riser-4" x="500" y="305" width="120" height="60" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2" 
+                              data-riser-type="woodwind" class="riser-draggable"/>
+                        <text id="woodwind-riser-4-label" x="560" y="340" text-anchor="middle" 
+                              class="riser-label" fill="white" font-size="10" font-weight="bold">WOODWIND 4</text>
+                    </g>
+
+                    <!-- String section containers -->
+                    <!-- Extra risers container (must be before players for proper z-order) -->
+                    <g id="extra-risers-section"></g>
+                    
+                    <!-- Player sections (render on top of risers) -->
+                    <g id="violin1-section"></g>
+                    <g id="violin2-section"></g>
+                    <g id="viola-section"></g>
+                    <g id="cello-section"></g>
+                    <g id="bass-section"></g>
+                    
+                    <!-- Dynamic instruments containers -->
+                    <g id="woodwinds-section"></g>
+                    <g id="percussion-section"></g>
+                    <g id="keyboard-section"></g>
+                    
+                    <!-- Chorus singers (render on top) -->
+                    <g id="chorus-singers-section"></g>
+                </svg>
+                
+                <div class="stage-plot-controls">
+                    <button class="reset-positions-btn" onclick="resetPlayerPositions()">
+                        Reset Player Positions
+                    </button>
+                    <button class="debug-btn" onclick="toggleDebugMode()">
+                        Debug Mode: OFF
+                    </button>
+                    <div id="keyboard-nav-info" style="margin-top: 10px; font-size: 0.9em; color: #718096; display: none;">
+                        <strong>Selected:</strong> <span id="selected-object-name"></span> - Use arrow keys for fine positioning
+                    </div>
+                </div>
+                
+                <div class="multi-select-instructions" style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                    <strong>Multi-Select:</strong> Drag to select multiple players • Ctrl/Cmd+Click to toggle selection • Drag selected group to move together • Esc to clear selection
+                </div>
+                
+                <div class="debug-info">
+                    <h4>Position Debug Information</h4>
+                    <div>Enable debug mode to see position data...</div>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module load order: dependencies first, then consumers -->
+    <script src="js/violinPositions.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/undo.js"></script>
+    <script src="js/risers.js"></script>
+    <script src="js/players.js"></script>
+    <script src="js/percussionBlob.js"></script>
+    <script src="js/chorus.js"></script>
+    <script src="js/selection.js"></script>
+    <script src="js/stateIO.js"></script>
+    <script src="js/themes.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Load saved theme after all scripts are loaded
+        if (typeof loadSavedTheme === 'function') {
+            loadSavedTheme();
+        }
+    </script>
+</body>
+</html>
