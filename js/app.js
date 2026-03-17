@@ -131,7 +131,8 @@ function removeInstrument(instrumentId) {
 
 function getContainerForInstrument(instrumentId) {
     const woodwinds = ['flute', 'oboe', 'clarinet', 'bassoon', 'saxophone', 'frenchhorn', 'trumpet', 'cornet', 'trombone', 'tuba'];
-    const percussion = ['timpani', 'snare', 'xylophone', 'marimba', 'cymbals', 'vibraphone', 'glockenspiel', 'chimes', 'bassDrum', 'cymbal'];
+    const percussion = ['timpani', 'snare', 'xylophone', 'marimba', 'cymbals', 'vibraphone', 'glockenspiel', 'chimes', 'bassDrum', 'cymbal',
+                        'tamtam', 'bongos', 'tom', 'belltree', 'marktree', 'smalltable', 'drumkit'];
     const keyboard = ['piano', 'celeste', 'harpsichord', 'keyboard', 'harp'];
 
     if (woodwinds.includes(instrumentId)) return 'woodwindsInstruments';
