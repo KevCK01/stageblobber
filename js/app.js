@@ -16,13 +16,60 @@ function closeBugReport() {
     document.getElementById('bug-report-modal').style.display = 'none';
 }
 
-function submitBugReport() {
+async function submitBugReport() {
     const subject = document.getElementById('bug-subject').value.trim() || 'Stage Blobber Bug Report';
     const body = document.getElementById('bug-message').value.trim();
-    if (!body) { alert('Please describe the bug before sending.'); return; }
-    const mailto = `mailto:kkiernan@allentownsymphony.org?subject=${encodeURIComponent('[Bug] ' + subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
-    closeBugReport();
+    if (!body) { 
+        alert('Please describe the bug before sending.'); 
+        return; 
+    }
+    
+    // Get the button that was clicked
+    const submitBtn = document.querySelector('#bug-report-modal button[onclick="submitBugReport()"]');
+    const originalText = submitBtn ? submitBtn.textContent : '';
+    
+    // Disable the submit button and show loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+    }
+    
+    try {
+        // Send the bug report via FormSpree
+        const response = await fetch('https://formspree.io/f/mzdkbplw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                subject: '[Bug] ' + subject,
+                message: body,
+                _replyto: 'no-reply@stageblobber.com',
+                _subject: '[Bug] ' + subject
+            })
+        });
+        
+        if (response.ok) {
+            alert('Bug report sent successfully! Thank you for your feedback.');
+            closeBugReport();
+        } else {
+            throw new Error('Server responded with error: ' + response.status);
+        }
+    } catch (error) {
+        console.error('Error sending bug report:', error);
+        
+        // Fallback to mailto if FormSpree fails
+        alert('Unable to send via web form. Opening your email client as backup...');
+        const mailto = `mailto:kkiernan@allentownsymphony.org?subject=${encodeURIComponent('[Bug] ' + subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailto);
+        closeBugReport();
+    } finally {
+        // Re-enable the submit button
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    }
 }
 
 // --- Sq Ft Editing Helpers ---
