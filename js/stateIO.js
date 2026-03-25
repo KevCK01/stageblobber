@@ -198,10 +198,10 @@ async function saveState() {
         // User cancelled
         if (fileName === null) return;
         
-        // Ensure filename has .json extension
+        // Ensure filename has .blobber extension
         fileName = fileName.trim();
         if (!fileName) fileName = defaultName;
-        if (!fileName.endsWith('.json')) fileName += '.json';
+        if (!fileName.endsWith('.blobber') && !fileName.endsWith('.json')) fileName += '.blobber';
         
         const state = {
             version: "1.0",
@@ -292,7 +292,7 @@ async function saveState() {
                     suggestedName: fileName,
                     types: [{
                         description: 'Stage Blobber Configuration',
-                        accept: { 'application/json': ['.json'] }
+                        accept: { 'application/json': ['.blobber', '.json'] }
                     }]
                 });
                 const writable = await handle.createWritable();
@@ -334,7 +334,13 @@ function loadState() {
 function handleFileLoad(event) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.type !== 'application/json') { alert('Please select a valid JSON file.'); return; }
+    
+    // Check file extension (accept both .blobber and .json for backward compatibility)
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.blobber') && !fileName.endsWith('.json')) {
+        alert('Please select a valid Stage Blobber file (.blobber or .json)');
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = function(e) {
