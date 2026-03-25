@@ -189,8 +189,20 @@ function exportPositions() {
 
 // --- Save State ---
 
-function saveState() {
+async function saveState() {
     try {
+        // Prompt user for filename
+        const defaultName = `orchestra-stage-plot-${new Date().toISOString().slice(0, 10)}`;
+        let fileName = prompt('Enter a name for your stage plot file:', defaultName);
+        
+        // User cancelled
+        if (fileName === null) return;
+        
+        // Ensure filename has .json extension
+        fileName = fileName.trim();
+        if (!fileName) fileName = defaultName;
+        if (!fileName.endsWith('.json')) fileName += '.json';
+        
         const state = {
             version: "1.0",
             timestamp: new Date().toISOString(),
@@ -272,11 +284,35 @@ function saveState() {
         });
 
         const jsonString = JSON.stringify(state, null, 2);
+        
+        // Try modern File System Access API first (Chrome, Edge, Opera)
+        if (window.showSaveFilePicker) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: fileName,
+                    types: [{
+                        description: 'Stage Blobber Configuration',
+                        accept: { 'application/json': ['.json'] }
+                    }]
+                });
+                const writable = await handle.createWritable();
+                await writable.write(jsonString);
+                await writable.close();
+                alert('Stage plot configuration saved successfully!');
+                return;
+            } catch (err) {
+                // User cancelled the save dialog or API not supported
+                if (err.name === 'AbortError') return;
+                console.log('File System Access API failed, falling back to download:', err);
+            }
+        }
+        
+        // Fallback to traditional download method
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `orchestra-stage-plot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
