@@ -290,10 +290,16 @@ async function saveState() {
             try {
                 const handle = await window.showSaveFilePicker({
                     suggestedName: fileName,
-                    types: [{
-                        description: 'Stage Blobber Configuration',
-                        accept: { 'application/json': ['.blobber', '.json'] }
-                    }]
+                    types: [
+                        {
+                            description: 'Stage Blobber Configuration',
+                            accept: { 'application/x-stageblobber': ['.blobber'] }
+                        },
+                        {
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] }
+                        }
+                    ]
                 });
                 const writable = await handle.createWritable();
                 await writable.write(jsonString);
@@ -308,7 +314,8 @@ async function saveState() {
         }
         
         // Fallback to traditional download method
-        const blob = new Blob([jsonString], { type: 'application/json' });
+        const mimeType = fileName.endsWith('.blobber') ? 'application/x-stageblobber' : 'application/json';
+        const blob = new Blob([jsonString], { type: mimeType });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
