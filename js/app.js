@@ -111,6 +111,37 @@ function updateSqFtDisplay(instrumentId) {
     }
 }
 
+// --- Additional Players ---
+
+function addAdditionalPlayer() {
+    const instrumentName = prompt('Enter player/instrument name:');
+    if (!instrumentName) return;
+
+    const defaultSqft = prompt('Enter space requirement (sq ft):', '10');
+    if (!defaultSqft) return;
+
+    const instrumentId = 'custom' + nextInstrumentId++;
+    customInstrumentContainers[instrumentId] = 'woodwindsInstruments';
+    customInstrumentOrientations[instrumentId] = 'straight';
+    addInstrument(instrumentId, instrumentName, parseFloat(defaultSqft), 1);
+
+    // Append orientation checkbox to the newly created row
+    const container = document.getElementById('woodwindsInstruments');
+    const row = container && container.lastElementChild;
+    if (row) {
+        const orientRow = document.createElement('label');
+        orientRow.className = 'orientation-checkbox-label';
+        orientRow.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:0.8em;opacity:0.85;margin-top:2px;cursor:pointer;';
+        orientRow.innerHTML = `<input type="checkbox" id="${instrumentId}-orient" onchange="toggleAdditionalPlayerOrientation('${instrumentId}', this.checked)" style="cursor:pointer;"> Orient towards podium`;
+        row.appendChild(orientRow);
+    }
+}
+
+function toggleAdditionalPlayerOrientation(instrumentId, checked) {
+    customInstrumentOrientations[instrumentId] = checked ? 'podium' : 'straight';
+    updateStagePlot();
+}
+
 // --- Instrument Dropdown & Management ---
 
 function toggleDropdown(section) {
@@ -171,6 +202,8 @@ function removeInstrument(instrumentId) {
     if (instrumentElement) {
         instrumentElement.parentElement.remove();
         dynamicInstruments = dynamicInstruments.filter(id => id !== instrumentId);
+        delete customInstrumentContainers[instrumentId];
+        delete customInstrumentOrientations[instrumentId];
         updateEmptyDisplays();
         calculateSpace();
     }
@@ -179,7 +212,7 @@ function removeInstrument(instrumentId) {
 function getContainerForInstrument(instrumentId) {
     const woodwinds = ['flute', 'oboe', 'clarinet', 'bassoon', 'saxophone', 'frenchhorn', 'trumpet', 'cornet', 'trombone', 'tuba'];
     const percussion = ['timpani', 'snare', 'xylophone', 'marimba', 'cymbals', 'vibraphone', 'glockenspiel', 'chimes', 'bassDrum', 'cymbal',
-                        'tamtam', 'bongos', 'tom', 'belltree', 'marktree', 'smalltable', 'drumkit'];
+                        'tamtam', 'bongos', 'tom', 'belltree', 'marktree', 'smalltable', 'drumkit', 'hihat'];
     const keyboard = ['piano', 'celeste', 'harpsichord', 'keyboard', 'harp'];
 
     if (woodwinds.includes(instrumentId)) return 'woodwindsInstruments';

@@ -1189,83 +1189,107 @@ polygon[data-riser-type="stage-extension"] {
 }
 
 @media print {
+    @page {
+        size: auto;
+        margin: 0.4in;
+    }
+
     .print-date, .print-summary {
         display: block;
     }
-    
-    /* Print plot only styles */
+
+    /* Hide everything except the stage plot */
     body.print-plot-only .main-container > *:not(.content-wrapper) {
-        display: none;
+        display: none !important;
     }
-    
+
+    body.print-plot-only .content-wrapper {
+        display: block !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
     body.print-plot-only .content-wrapper > .inputs-container {
-        display: none;
+        display: none !important;
     }
-    
-    body.print-plot-only .stage-plot-section > .stage-plot-header {
-        display: none;
+
+    body.print-plot-only .stage-plot-container-wrapper {
+        display: block !important;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
     }
-    
+
+    body.print-plot-only .stage-plot-section {
+        display: block !important;
+        width: 100%;
+        overflow: visible;
+        background: white;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    body.print-plot-only .stage-plot-section > .stage-plot-header,
     body.print-plot-only .stage-plot-controls,
     body.print-plot-only .debug-info,
     body.print-plot-only .footer,
     body.print-plot-only .multi-select-instructions {
         display: none !important;
     }
-    
-    /* Hide all divs in stage-plot-section except the stage-plot-container */
-    body.print-plot-only .stage-plot-section > div:not(.stage-plot-container) {
+
+    /* Hide all direct-child divs inside stage-plot-section except the container, print title, and summary */
+    body.print-plot-only .stage-plot-section > div:not(.stage-plot-container):not(#stage-plot-print-title):not(#print-musician-summary) {
         display: none !important;
     }
-    
-    body.print-plot-only {
-        margin: 0;
-        padding: 0;
+
+    body.print-plot-only #stage-plot-print-title {
+        display: block !important;
+        text-align: center;
+        padding: 0 0 6px;
+        font-size: 1.2em;
+        font-weight: 700;
+        color: #000;
     }
-    
-    body.print-plot-only .stage-plot-container-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: white;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        padding: 0.5in;
-        box-sizing: border-box;
+
+    body.print-plot-only #print-musician-summary {
+        display: block !important;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #ccc;
+        color: #000;
     }
-    
-    body.print-plot-only .stage-plot-section {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    
+
     body.print-plot-only .stage-plot-container {
+        display: block !important;
         width: 100%;
-        height: 100%;
-        flex: 1;
-        max-width: none;
-        max-height: none;
+        padding: 0;
+        margin: 0;
         background: white;
         border-radius: 0;
         box-shadow: none;
         border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
-    
+
+    /* SVG: scale to page width, let viewBox aspect ratio set the height.
+       Avoid height:100% — it breaks in Safari and Firefox print. */
     body.print-plot-only .stage-plot {
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        max-height: none;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        background: white;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    body.print-plot-only {
+        margin: 0;
+        padding: 0;
+        background: white;
     }
 }
 

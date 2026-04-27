@@ -102,21 +102,27 @@ function restoreRiserStates() {
 function hideBrassWoodwindTimpaniRisers() {
     const timpani = document.getElementById('timpani-riser');
     const timpaniLabel = document.getElementById('timpani-riser-label');
+    const timpaniCb = document.getElementById('timpani-riser-checkbox');
     if (timpani) timpani.style.display = 'none';
     if (timpaniLabel) timpaniLabel.style.display = 'none';
+    if (timpaniCb) timpaniCb.checked = false;
 
     for (let i = 1; i <= 5; i++) {
         const r = document.getElementById(`brass-riser-${i}`);
         const l = document.getElementById(`brass-riser-${i}-label`);
+        const cb = document.getElementById(`brass-riser-${i}-checkbox`);
         if (r) r.style.display = 'none';
         if (l) l.style.display = 'none';
+        if (cb) cb.checked = false;
     }
 
     for (let i = 1; i <= 4; i++) {
         const r = document.getElementById(`woodwind-riser-${i}`);
         const l = document.getElementById(`woodwind-riser-${i}-label`);
+        const cb = document.getElementById(`woodwind-riser-${i}-checkbox`);
         if (r) r.style.display = 'none';
         if (l) l.style.display = 'none';
+        if (cb) cb.checked = false;
     }
 }
 
@@ -167,7 +173,7 @@ function createChorusRisers() {
                 id: riserId, size: '8x4', config: config,
                 x: startingXPositions[i], y: y,
                 dragging: false, dragOffset: { x: 0, y: 0 },
-                number: riserNumber
+                number: riserNumber, rowIndex: row
             };
             chorusRisers.push(riserData);
             createChorusRiserElements(riserData);
@@ -447,9 +453,9 @@ function moveChorusRiser(riserId, deltaX, deltaY) {
 }
 
 function moveSingersWithRiser(riserId, deltaX, deltaY) {
-    const riserNumber = parseInt(riserId.match(/chorus-riser-(\d+)/)?.[1] || '0');
-    if (riserNumber === 0) return;
-    const rowIndex = Math.floor((riserNumber - 1) / 4);
+    const rd = chorusRisers.find(r => r.id === riserId);
+    if (!rd) return;
+    const rowIndex = rd.rowIndex;
 
     chorusSingers.filter(s => s.rowIndex === rowIndex).forEach(singerData => {
         singerData.x += deltaX;
@@ -470,6 +476,16 @@ function clearChorusRisers() {
         if (l) l.remove();
     });
     chorusRisers = [];
+}
+
+function renumberChorusRisers() {
+    // Sort visually: top rows first (smallest y), then left to right (smallest x)
+    const sorted = [...chorusRisers].sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x);
+    sorted.forEach((rd, i) => {
+        rd.number = i + 1;
+        const label = document.getElementById(rd.id + '-label');
+        if (label) label.textContent = `CHORUS #${rd.number}`;
+    });
 }
 
 // --- Row Management ---
@@ -549,12 +565,7 @@ function createSingersForRow(rowIndex, singerCount) {
     const section = document.getElementById('chorus-singers-section');
     if (!section) return;
 
-    const firstRiserNumber = rowIndex * 4 + 1;
-    const lastRiserNumber = firstRiserNumber + 3;
-    const rowRisers = chorusRisers.filter(riser => {
-        const num = parseInt(riser.id.match(/chorus-riser-(\d+)/)?.[1] || '0');
-        return num >= firstRiserNumber && num <= lastRiserNumber;
-    }).sort((a, b) => a.x - b.x);
+    const rowRisers = chorusRisers.filter(riser => riser.rowIndex === rowIndex).sort((a, b) => a.x - b.x);
 
     if (rowRisers.length === 0) return;
 

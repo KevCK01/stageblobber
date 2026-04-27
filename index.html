@@ -15,6 +15,11 @@
                     <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
 
                         <img src="assets/blobberlogo.png" alt="Stage Blobber" class="site-logo" style="max-height: 120px; height: auto; width: auto;">
+                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                            <input type="text" id="stage-plot-name-input" placeholder="Stage plot name..."
+                                   oninput="setStagePlotName(this.value)"
+                                   style="padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border-primary); background: var(--bg-secondary); color: var(--text-primary); font-size: 1em; font-weight: 600; width: 260px; outline: none;">
+                        </div>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <button class="save-btn" onclick="saveState()">Save</button>
                             <button class="load-btn" onclick="loadState()">Load</button>
@@ -226,18 +231,11 @@
                         </div>
                     </div>
 
-                    <!-- Other Winds -->
+                    <!-- Additional Players -->
                     <div class="section">
-                        <h3>Other Winds</h3>
+                        <h3>Additional Players</h3>
                         <div class="instrument-dropdown">
-                            <button class="add-instrument-btn" onclick="toggleDropdown('woodwinds')">Add Instrument</button>
-                            <div class="dropdown-content" id="instrumentDropdownWoodwinds">
-                                <div class="dropdown-header">Other Woodwinds</div>
-                                <div class="dropdown-item" onclick="addInstrument('saxophone', 'Saxophone', 8)">Saxophone</div>
-                                <div class="dropdown-header">Other Brass</div>
-                                <div class="dropdown-item" onclick="addInstrument('cornet', 'Cornet', 10)">Cornet</div>
-                                <div class="dropdown-item" onclick="addCustomInstrument('woodwindsInstruments')" style="border-top: 1px solid #e2e8f0; font-weight: bold;">➕ Add Custom Item</div>
-                            </div>
+                            <button class="add-instrument-btn" onclick="addAdditionalPlayer()">Add Instrument</button>
                         </div>
                         <div class="empty-instruments" id="emptyWoodwinds"></div>
                         <div id="woodwindsInstruments"></div>
@@ -252,13 +250,14 @@
                                 <div class="dropdown-item" onclick="addInstrument('snare', 'Snare Drum', 16, 1)">Snare Drum</div>
                                 <div class="dropdown-item" onclick="addInstrument('xylophone', 'Xylophone', 15, 1)">Xylophone</div>
                                 <div class="dropdown-item" onclick="addInstrument('marimba', 'Marimba', 36, 1)">Marimba</div>
-                                <div class="dropdown-item" onclick="addInstrument('cymbals', 'Crash Cymbals', 9, 1)">Crash Cymbals</div>
-                                <div class="dropdown-item" onclick="addInstrument('vibraphone', 'Vibraphone', 18, 1)">Vibraphone</div>
+                                <div class="dropdown-item" onclick="addInstrument('cymbals', 'Crash Cymbals', 5, 1)">Crash Cymbals</div>
+                                <div class="dropdown-item" onclick="addInstrument('vibraphone', 'Vibraphone', 15, 1)">Vibraphone</div>
                                 <div class="dropdown-item" onclick="addInstrument('glockenspiel', 'Glockenspiel', 7.5, 1)">Glockenspiel</div>
-                                <div class="dropdown-item" onclick="addInstrument('chimes', 'Chimes', 15, 1)">Chimes</div>
-                                <div class="dropdown-item" onclick="addInstrument('bassDrum', 'Bass Drum', 25, 1)">Bass Drum</div>
+                                <div class="dropdown-item" onclick="addInstrument('chimes', 'Chimes', 9, 1)">Chimes</div>
+                                <div class="dropdown-item" onclick="addInstrument('bassDrum', 'Bass Drum', 18, 1)">Bass Drum</div>
                                 <div class="dropdown-item" onclick="addInstrument('cymbal', 'Suspended Cymbal', 9, 1)">Suspended Cymbal</div>
-                                <div class="dropdown-item" onclick="addInstrument('tamtam', 'Tam-tam', 25, 1)">Tam-tam</div>
+                                <div class="dropdown-item" onclick="addInstrument('tamtam', 'Tam-tam', 16, 1)">Tam-tam</div>
+                                <div class="dropdown-item" onclick="addInstrument('hihat', 'Hi-hat', 5, 1)">Hi-hat</div>
                                 <div class="dropdown-item" onclick="addInstrument('bongos', 'Bongos', 6, 1)">Bongos</div>
                                 <div class="dropdown-item" onclick="addInstrument('tom', 'Tom (single, on stand)', 9, 1)">Tom (single, on stand)</div>
                                 <div class="dropdown-item" onclick="addInstrument('belltree', 'Bell Tree', 6, 1)">Bell Tree</div>
@@ -412,7 +411,9 @@
             <!-- Right Side: Stage Plot -->
             <div class="stage-plot-container-wrapper">
                 <div class="stage-plot-section">
+            <div id="stage-plot-print-title" style="display:none; text-align:center; padding: 10px 0 4px; font-size: 1.3em; font-weight: 700; letter-spacing: 0.04em;"></div>
             <div class="stage-plot-container" style="position: relative;">
+
                 <div id="overlap-warning" style="display: none; position: absolute; top: 8px; left: 8px; z-index: 100; background: rgba(220, 50, 50, 0.9); color: #fff; padding: 6px 12px; border-radius: 5px; font-size: 0.85em; font-weight: 600; pointer-events: none;">Warning: Generated Players are Overlapping</div>
                 <svg class="stage-plot" viewBox="0 0 1000 940" xmlns="http://www.w3.org/2000/svg">
                     <!-- Scale reference grid (every 5 feet = 75 pixels) -->
@@ -671,6 +672,7 @@
                     <div>Enable debug mode to see position data...</div>
                 </div>
             </div>
+            <div id="print-musician-summary" style="display:none;"></div>
                 </div>
             </div>
         </div>

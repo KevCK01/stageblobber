@@ -873,14 +873,20 @@ function resetTimpaniRiserPosition() {
 function toggleTimpaniRiser() {
     const checkbox = document.getElementById('timpani-riser-checkbox');
     const section = document.getElementById('timpani-riser-section');
+    const riser = document.getElementById('timpani-riser');
+    const label = document.getElementById('timpani-riser-label');
     if (checkbox.checked) {
         if (chorusEnabled) {
-            timpaniRiserPosition = { x: 100, y: 800 };
+            timpaniRiserPosition = { x: 100, y: 440 };
             updateTimpaniRiserPosition();
         }
-        section.style.display = 'block';
+        if (section) section.style.display = 'block';
+        if (riser) riser.style.display = 'block';
+        if (label) label.style.display = 'block';
     } else {
-        section.style.display = 'none';
+        if (section) section.style.display = 'none';
+        if (riser) riser.style.display = 'none';
+        if (label) label.style.display = 'none';
     }
 }
 
@@ -1256,13 +1262,13 @@ function deleteSelectedRisers() {
         } else if (riserId.startsWith('chorus-riser-')) {
             const idx = chorusRisers.findIndex(r => r.id === riserId);
             if (idx !== -1) {
+                const rowIndex = chorusRisers[idx].rowIndex;
                 chorusRisers.splice(idx, 1);
                 const el = document.getElementById(riserId);
                 const label = document.getElementById(riserId + '-label');
                 if (el) el.remove();
                 if (label) label.remove();
-                const riserNumber = parseInt(riserId.match(/chorus-riser-(\d+)/)?.[1] || '0');
-                const rowIndex = Math.floor((riserNumber - 1) / 4);
+                renumberChorusRisers();
                 const singersInRow = chorusSingersPerRow[rowIndex] || 0;
                 if (singersInRow > 0) {
                     clearChorusSingersForRow(rowIndex);

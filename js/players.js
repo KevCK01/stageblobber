@@ -7,12 +7,19 @@
 function updatePlayerOrientation(player, playerX, playerY) {
     if (!player || player.tagName !== 'ellipse') return;
 
-    // Check if this is a woodwind or brass instrument - they always face vertically
-    const instrumentType = player.getAttribute('data-instrument-type');
-    if (WOODWIND_INSTRUMENTS.includes(instrumentType) || BRASS_INSTRUMENTS.includes(instrumentType)) {
-        // Keep woodwinds and brass vertical (no rotation)
+    // Explicit override takes priority (set by Additional Players orientation dropdown)
+    const override = player.getAttribute('data-orientation-override');
+    if (override === 'straight') {
         player.setAttribute('transform', `rotate(0 ${playerX} ${playerY})`);
         return;
+    }
+    if (override !== 'podium') {
+        // No override — fall back to instrument-type rules
+        const instrumentType = player.getAttribute('data-instrument-type');
+        if (WOODWIND_INSTRUMENTS.includes(instrumentType) || BRASS_INSTRUMENTS.includes(instrumentType)) {
+            player.setAttribute('transform', `rotate(0 ${playerX} ${playerY})`);
+            return;
+        }
     }
 
     const dx = podiumPosition.x - playerX;
@@ -34,7 +41,7 @@ function updateAllPlayerOrientations() {
 
 // --- Player Creation ---
 
-function createPlayer(section, className, playerId, pos, label, instrumentType) {
+function createPlayer(section, className, playerId, pos, label, instrumentType, orientationOverride = null) {
     const radius = calculatePlayerRadius(instrumentType);
     const originalPos = { x: pos.x, y: pos.y };
     originalPositions[playerId] = originalPos;
@@ -67,6 +74,9 @@ function createPlayer(section, className, playerId, pos, label, instrumentType) 
     player.setAttribute('class', className);
     player.setAttribute('data-player-id', playerId);
     player.setAttribute('data-instrument-type', instrumentType);
+    if (orientationOverride) {
+        player.setAttribute('data-orientation-override', orientationOverride);
+    }
 
     // Debug position highlight
     const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1151,10 +1161,11 @@ function updateWoodwindsSection() {
                 let pos;
                 if (positionIndex < fallbackPositions.length) {
                     pos = fallbackPositions[positionIndex++];
-            } else {
-                pos = { x: 300 + (positionIndex++ * 30), y: 400 };
-            }
-            createPlayer(section, 'brass-player', playerId, pos, label, instrumentId);
+                } else {
+                    pos = { x: 300 + (positionIndex++ * 30), y: 400 };
+                }
+                const orientation = customInstrumentOrientations[instrumentId] || 'straight';
+                createPlayer(section, 'brass-player', playerId, pos, label, instrumentId, orientation);
             }
         }
     });

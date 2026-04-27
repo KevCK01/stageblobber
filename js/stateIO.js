@@ -66,9 +66,112 @@ function resetCalculator() {
     calculateSpace();
 }
 
+// --- Stage Plot Name ---
+
+function setStagePlotName(name) {
+    stagePlotName = name.trim();
+    const printTitle = document.getElementById('stage-plot-print-title');
+    if (printTitle) printTitle.textContent = stagePlotName;
+}
+
 // --- Print ---
 
+function buildMusicianSummary() {
+    const sections = [];
+
+    // Helper: read a static instrument count
+    function staticCount(id) {
+        return parseInt(document.getElementById(id)?.value) || 0;
+    }
+
+    // Helper: read all non-zero instruments from a dynamic container
+    function containerItems(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        const items = [];
+        container.querySelectorAll('.input-group').forEach(group => {
+            const labelEl = group.querySelector('label');
+            const inputEl = group.querySelector('input[type="number"]');
+            if (labelEl && inputEl) {
+                const count = parseInt(inputEl.value) || 0;
+                if (count > 0) {
+                    const label = labelEl.textContent.replace(':', '').trim();
+                    items.push({ label, count });
+                }
+            }
+        });
+        return items;
+    }
+
+    // Strings
+    const stringDefs = [
+        { id: 'violin1', label: 'Violin 1' }, { id: 'violin2', label: 'Violin 2' },
+        { id: 'viola',   label: 'Viola'    }, { id: 'cello',   label: 'Cello'    },
+        { id: 'bass',    label: 'Bass'     }
+    ];
+    const stringItems = stringDefs.map(s => staticCount(s.id) > 0 ? { label: s.label, count: staticCount(s.id) } : null).filter(Boolean);
+    if (stringItems.length) sections.push({ title: 'Strings', items: stringItems });
+
+    // Woodwinds
+    const wwDefs = [
+        { id: 'flute', label: 'Flute' }, { id: 'oboe',    label: 'Oboe'    },
+        { id: 'clarinet', label: 'Clarinet' }, { id: 'bassoon', label: 'Bassoon' }
+    ];
+    const wwItems = wwDefs.map(s => staticCount(s.id) > 0 ? { label: s.label, count: staticCount(s.id) } : null).filter(Boolean);
+    if (wwItems.length) sections.push({ title: 'Woodwinds', items: wwItems });
+
+    // Brass
+    const brassDefs = [
+        { id: 'horn', label: 'Horn' }, { id: 'trumpet',  label: 'Trumpet'  },
+        { id: 'trombone', label: 'Trombone' }, { id: 'tuba', label: 'Tuba' }
+    ];
+    const brassItems = brassDefs.map(s => staticCount(s.id) > 0 ? { label: s.label, count: staticCount(s.id) } : null).filter(Boolean);
+    if (brassItems.length) sections.push({ title: 'Brass', items: brassItems });
+
+    // Additional Players
+    const addlItems = containerItems('woodwindsInstruments');
+    if (addlItems.length) sections.push({ title: 'Additional', items: addlItems });
+
+    // Percussion
+    const percItems = containerItems('percussionInstruments');
+    if (percItems.length) sections.push({ title: 'Percussion', items: percItems });
+
+    // Keyboard & Harp
+    const keyItems = containerItems('keyboardInstruments');
+    if (keyItems.length) sections.push({ title: 'Keyboard / Harp', items: keyItems });
+
+    // Concert Grand
+    if (concertGrandEnabled) sections.push({ title: 'Soloist', items: [{ label: 'Concert Grand', count: 1 }] });
+
+    // Chorus
+    if (chorusEnabled && chorusSingers.length > 0) {
+        sections.push({ title: 'Chorus', items: [{ label: 'Singers', count: chorusSingers.length }] });
+    }
+
+    if (sections.length === 0) return '';
+
+    // Total musicians (all named players)
+    let total = 0;
+    sections.forEach(s => s.items.forEach(item => total += item.count));
+
+    // Build compact multi-column HTML
+    let html = `<div style="display:flex; flex-wrap:wrap; gap:12px 24px; font-size:0.82em; font-family:sans-serif;">`;
+    sections.forEach(sec => {
+        html += `<div style="min-width:110px;">
+            <div style="font-weight:700; text-transform:uppercase; font-size:0.78em; letter-spacing:0.06em; margin-bottom:3px; border-bottom:1px solid #999; padding-bottom:2px;">${sec.title}</div>`;
+        sec.items.forEach(item => {
+            html += `<div style="display:flex; justify-content:space-between; gap:8px;"><span>${item.label}</span><strong>${item.count}</strong></div>`;
+        });
+        html += `</div>`;
+    });
+    html += `</div>`;
+    html += `<div style="margin-top:6px; font-size:0.82em; font-weight:700; font-family:sans-serif;">Total Musicians: ${total}</div>`;
+    return html;
+}
+
 function printStagePlot() {
+    const summary = document.getElementById('print-musician-summary');
+    if (summary) summary.innerHTML = buildMusicianSummary();
     document.body.classList.add('print-plot-only');
     window.print();
     setTimeout(() => document.body.classList.remove('print-plot-only'), 100);
@@ -191,8 +294,9 @@ function exportPositions() {
 
 async function saveState() {
     try {
-        // Prompt user for filename
-        const defaultName = `orchestra-stage-plot-${new Date().toISOString().slice(0, 10)}`;
+        // Prompt user for filename — use plot name if set, otherwise fall back to date
+        const sanitized = stagePlotName ? stagePlotName.replace(/[^a-z0-9\-_\s]/gi, '').trim().replace(/\s+/g, '-') : '';
+        const defaultName = sanitized || `orchestra-stage-plot-${new Date().toISOString().slice(0, 10)}`;
         let fileName = prompt('Enter a name for your stage plot file:', defaultName);
         
         // User cancelled
@@ -206,6 +310,7 @@ async function saveState() {
         const state = {
             version: "1.0",
             timestamp: new Date().toISOString(),
+            stagePlotName: stagePlotName,
             staticInstruments: {},
             dynamicInstruments: [...dynamicInstruments],
             dynamicInstrumentData: {},
@@ -404,6 +509,13 @@ function restoreState(state) {
         }
 
         if (state.customPositions) customPositions = { ...state.customPositions };
+
+        // Restore stage plot name
+        if (state.stagePlotName !== undefined) {
+            const nameInput = document.getElementById('stage-plot-name-input');
+            if (nameInput) nameInput.value = state.stagePlotName;
+            setStagePlotName(state.stagePlotName);
+        }
 
         // Restore default seating flags
         if (state.useDefaultSeating !== undefined) {

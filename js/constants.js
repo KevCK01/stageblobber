@@ -34,7 +34,7 @@ const riserConfigs = {
 const staticInstruments = ['violin1', 'violin2', 'viola', 'cello', 'bass', 'flute', 'oboe', 'clarinet', 'bassoon', 'horn', 'trumpet', 'trombone', 'tuba'];
 const WOODWIND_INSTRUMENTS = ['flute', 'oboe', 'clarinet', 'bassoon', 'saxophone'];
 const BRASS_INSTRUMENTS = ['horn', 'trumpet', 'cornet', 'trombone', 'tuba'];
-const PERCUSSION_INSTRUMENTS = ['timpani', 'snare', 'xylophone', 'marimba', 'cymbals', 'vibraphone', 'glockenspiel', 'chimes', 'bassDrum', 'cymbal'];
+const PERCUSSION_INSTRUMENTS = ['timpani', 'snare', 'xylophone', 'marimba', 'cymbals', 'vibraphone', 'glockenspiel', 'chimes', 'bassDrum', 'cymbal', 'hihat'];
 const KEYBOARD_INSTRUMENTS = ['piano', 'celeste', 'harpsichord', 'keyboard', 'harp'];
 
 // Percussion blob constants

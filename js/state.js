@@ -2,10 +2,14 @@
 // STATE - All global application state
 // ============================================
 
+// Stage plot name
+let stagePlotName = '';
+
 // Instrument management
 let dynamicInstruments = [];
 let nextInstrumentId = 1;
 let customInstrumentContainers = {};
+let customInstrumentOrientations = {};
 
 // Drag and drop
 let isDragging = false;
@@ -22,6 +26,7 @@ let collisionDetectionEnabled = true;
 let useDefaultSeating = true;
 let useDefaultWoodwindSeating = true;
 let useDefaultBrassSeating = true;
+let additionalPlayersOrientation = 'straight'; // 'straight' or 'podium'
 
 // Multi-select
 let selectedPlayers = new Set();
